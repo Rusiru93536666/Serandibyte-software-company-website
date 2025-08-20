@@ -8,8 +8,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Services from './components/Services'
 import { Rocket, ChartNoAxesCombined, Layers, } from "lucide-react";
 import Alert from './components/Alert'
+import { NextPage } from 'next'
 
-function Page() {
+export default function Page() {
   const servicesRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Array<HTMLDivElement | null>>([])
   const aboutCardsRef = useRef<Array<HTMLDivElement | null>>([])
@@ -620,4 +621,3 @@ function Page() {
   )
 }
 
-export default Page();

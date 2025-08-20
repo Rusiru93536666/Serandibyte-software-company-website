@@ -14,7 +14,7 @@ function Footer() {
               <h3 className="text-xl font-bold">SerandiByte</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Innovative technology solutions for the modern world. 
-                Building tomorrow's digital experiences today.
+                Building tomorrow s digital experiences today.
               </p>
             </div>
 
@@ -31,8 +31,7 @@ function Footer() {
                 </a>
                 <a 
                   href="mailto:hello@serandibyte.com" 
-                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors duration-200"
-                >
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors duration-200">
                   <Mail size={18} />
                   <span className="text-sm">serandibyte.com</span>
                 </a>

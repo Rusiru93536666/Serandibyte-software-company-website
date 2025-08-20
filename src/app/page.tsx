@@ -9,7 +9,7 @@ import Services from './components/Services'
 import { Rocket, ChartNoAxesCombined, Layers, } from "lucide-react";
 import Alert from './components/Alert'
 
-function page() {
+function Page() {
   const servicesRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<Array<HTMLDivElement | null>>([])
   const aboutCardsRef = useRef<Array<HTMLDivElement | null>>([])
@@ -600,8 +600,9 @@ function page() {
                   setPhone("");
                   setCompany("");
                   setMessage("");
-                } catch (err) {
-                  showAlert("error", "Server error");
+                } catch (error) {
+                  console.error("Error submitting form:", error);
+                  showAlert("error", "Failed to send message. Please try again later.");
                 }
               }}
             >
@@ -619,4 +620,4 @@ function page() {
   )
 }
 
-export default page
+export default Page();

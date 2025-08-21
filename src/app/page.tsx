@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import Navbar from './components/navbar'
-import Footer from './components/footer'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Services from './components/Services'
@@ -312,10 +312,12 @@ export default function Page() {
               Our mission is to provide top-notch services that enhance productivity and foster innovation.
             </p>
             <div className="w-full sm:w-auto mt-8 flex justify-center md:justify-start">
+            <a href="#contact">
                <button className="group relative px-12 py-4 border-2 border-[#00E5FF] font-medium tracking-wider uppercase text-sm hover:bg-[#00E5FF] hover:text-black transition-all duration-300 overflow-hidden">
             <span className="relative z-10">Free Consultant</span>
             <div className="absolute inset-0 bg-[#00E5FF] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
           </button>
+          </a>
             </div>
           </div>
           {/* Right: Image */}

@@ -23,10 +23,6 @@ export default function Page() {
   // stagger-animate them together as a group.
   const cardRefs = useRef<Array<HTMLDivElement | null>>([])
 
-  // Array of refs for the "Why Choose Us" about-section cards, used for
-  // both the scroll-in reveal animation and the per-card hover effect.
-  const aboutCardsRef = useRef<Array<HTMLDivElement | null>>([])
-
   // Ref for an image element that slides in horizontally on scroll
   // (currently not attached to any JSX element below, but animated if present).
   const modernImgRef = useRef<HTMLDivElement>(null)
@@ -133,76 +129,6 @@ export default function Page() {
       )
     }
 
-    // --- "Why Choose Us" about-section cards ---
-    if (aboutCardsRef.current.length) {
-      // Reveal animation: cards slide in from the right and fade in,
-      // staggered, and reverse if the user scrolls back up past the trigger.
-      gsap.from(aboutCardsRef.current, {
-        opacity: 0,
-        x: 80,
-        stagger: 0.3,
-        duration: 0.7,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: aboutCardsRef.current[0]?.parentElement,
-          start: 'top 80%',
-          end: 'bottom 60%',
-          toggleActions: 'play none none reverse',
-        },
-      })
-
-      // Per-card hover interaction: scale up + glow shadow on hover,
-      // plus a subtle "magnetic" tilt that follows the mouse position
-      // relative to the card's center.
-      aboutCardsRef.current.forEach(card => {
-        if (!card) return
-
-        // Holds the mousemove handler so it can be removed on mouseleave.
-        let mouseMoveHandler: ((e: MouseEvent) => void) | null = null
-
-        card.addEventListener('mouseenter', () => {
-          // Grow the card and add a glowing shadow on hover.
-          gsap.to(card, {
-            scale: 1.07,
-            boxShadow: '0 8px 32px 0 rgba(3, 184, 255, 0.3)',
-            duration: 0.3,
-            ease: 'power2.out',
-          })
-
-          // While hovered, nudge the card slightly toward the cursor
-          // position (a subtle magnetic/parallax effect).
-          mouseMoveHandler = (e: MouseEvent) => {
-            const rect = card.getBoundingClientRect()
-            const x = e.clientX - (rect.left + rect.width / 2)
-            const y = e.clientY - (rect.top + rect.height / 2)
-            gsap.to(card, {
-              x: x * 0.15,
-              y: y * 0.15,
-              duration: 0.3,
-              ease: 'power2.out',
-            })
-          }
-          card.addEventListener('mousemove', mouseMoveHandler)
-        })
-
-        card.addEventListener('mouseleave', () => {
-          // Reset scale/shadow/position back to normal on mouse leave.
-          gsap.to(card, {
-            scale: 1,
-            boxShadow: '0 4px 16px 0 rgba(0,0,0,0.2)',
-            x: 0,
-            y: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-          })
-          // Clean up the mousemove listener so it doesn't leak.
-          if (mouseMoveHandler) {
-            card.removeEventListener('mousemove', mouseMoveHandler)
-            mouseMoveHandler = null
-          }
-        })
-      })
-    }
 
     // --- "Modern image" slide-in animation ---
     // Moves the element from the right (x: 80) to the left (x: -80) while
@@ -339,7 +265,7 @@ export default function Page() {
   // RENDER
   // ---------------------------------------------------------------------
   return (
-    <main className="flex flex-col lg:flex-row min-h-screen w-full bg-black">
+    <main className="flex flex-col lg:flex-row min-h-screen w-full bg-[#151515]">
 
       {/* Alert banner — only rendered when `alert` state is set */}
       {alert && (
@@ -355,54 +281,61 @@ export default function Page() {
         <Navbar />
       </aside>
 
-      {/* Subtle vignette + grid backdrop — purely decorative background layer,
-          fixed behind all content, ignores pointer events */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(0,229,255,0.12),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(0,229,255,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,229,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,229,255,0.06)_1px,transparent_1px)] bg-[size:32px_32px]" />
-      </div>
+      
 
       {/* MAIN CONTENT */}
-      <section className="flex-1 flex flex-col ml-0 w-full bg-gradient-to-r from-[#000000] via-black to-[#000000]">
+      <section className="flex-1 flex flex-col ml-0 w-full bg-[#151515]">
+        
+        {/* Subtle vignette + grid backdrop — purely decorative background layer,
+          fixed behind all content, ignores pointer events */}
+      <div className="pointer-events-none fixed inset-0 z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgb(253, 253, 253),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(252, 252, 252, 0.12),transparent_55%)] z-10" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(250, 250, 250)_1px,transparent_1px),linear-gradient(to_bottom,rgba(253, 255, 255, 0.06)_1px,transparent_1px)] bg-[size:32px_32px] z-10" />
+      </div>
 
         {/* ============================= HERO SECTION ============================= */}
-        <div id="home" className="flex flex-col md:flex-row items-center justify-center min-h-[80vh] px-4 py-8 gap-8 mt-20  pl-[12vw] text-[#00E5FF]">
-          {/* Left: Headline + CTA */}
-          <div className="flex-1 flex flex-col items-center md:items-start">
+        <div
+          id="home"
+          className="
+            relative flex flex-col md:flex-row items-center justify-center 
+            min-h-[80vh] px-4 py-8 gap-8 h-screen pl-[12vw]
+            text-[#FFFFFF]
+            bg-cover bg-center bg-no-repeat
+          "
+          style={{
+            backgroundImage: "url('/hero_bg.png')",
+          }}
+        >
+        
 
-            {/* Small pill badge above the headline */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#00E5FF]/40 bg-[#00E5FF]/5 px-3 py-1 text-xs tracking-wider uppercase mb-4">
-              <span className="h-2 w-2 rounded-full bg-[#00E5FF] animate-pulse" />
+          {/* Content */}
+          <div className="relative z-10 flex-1 flex flex-col items-center md:items-start">
+
+            {/* Small pill badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#FFFFFF]/40 bg-[#FFFFFF]/5 px-3 py-1 text-xs tracking-wider uppercase mb-4">
+              <span className="h-2 w-2 rounded-full bg-[#FFFFFF] animate-pulse" />
               SerandiByte Portfolio
             </div>
 
             <h2 className="text-4xl sm:text-6xl lg:text-8xl font-bold text-center md:text-left">
               Welcome to <br />SerandiByte
             </h2>
+
             <p className="text-base sm:text-lg mt-4 max-w-2xl text-center md:text-left">
               SerandiByte is a cutting-edge platform designed to streamline your digital experience.
               Our mission is to provide top-notch services that enhance productivity and foster innovation.
             </p>
+
             <div className="w-full sm:w-auto mt-8 flex justify-center md:justify-start">
-              {/* Jumps to the #contact anchor via native in-page navigation */}
               <a href="#contact">
-                <button className="group relative px-12 py-4 border-2 border-[#00E5FF] font-medium tracking-wider uppercase text-sm hover:bg-[#00E5FF] hover:text-black transition-all duration-300 overflow-hidden">
+                <button className="group relative px-12 py-4 border-2 border-[#FFFFFF] font-medium tracking-wider uppercase text-sm hover:bg-[#FFFFFF] hover:text-black transition-all duration-300 overflow-hidden">
                   <span className="relative z-10">Free Consultant</span>
-                  {/* Sliding fill effect on hover */}
-                  <div className="absolute inset-0 bg-[#00E5FF] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                  <div className="absolute inset-0 bg-[#FFFFFF] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
                 </button>
               </a>
             </div>
           </div>
-          {/* Right: Hero image/GIF */}
-          <div className="relative">
-            <img
-              src="/circule.gif "
-              alt="Holographic Motion"
-              loading="eager"
-              className="w-full rounded-[28px] border border-[#00E5FF]/20 backdrop-blur-xl bg-[#00E5FF]/5 shadow-[0_0_80px_rgba(0,229,255,0.25)]"
-            />
-          </div>
+
         </div>
 
         {/* ============================= MARQUEE ============================= */}
@@ -415,74 +348,11 @@ export default function Page() {
           </div>
         </section>
 
-        {/* ============================= ABOUT SECTION ============================= */}
-        <section
-          id="about"
-          className="flex flex-col items-center justify-center py-16 px-4 text-[#00E5FF] pl-[12vw]">
-          <h2 className="text-3xl sm:text-5xl lg:text-7xl text-center">Why You <span className="text-[#00E5FF80]">Choose Us</span></h2>
-          <p className="text-base sm:text-lg mt-6 max-w-3xl text-center">
-            Our goal is to create applications that deliver a modern, professional, and memorable brand experience.
-            We combine innovative design, advanced technology, and strategic thinking to craft solutions that add
-            value, build trust, and strengthen your brand. By aligning with your business goals and customer needs,
-            we believe this approach drives satisfaction, engagement, and long-term success.
-          </p>
-
-          {/* Feature cards — each rendered from the array below and animated
-              via aboutCardsRef in the useEffect above */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-18 w-full min-w-sm max-w-6xl">
-            {[
-              {
-                title: 'Business Growth',
-                desc: `We don't believe in one-size-fits-all. Whether you need a member dashboard, an e-commerce
-              store, a real-time booking system, or a data-driven admin panel, we build it from the
-              ground up to fit your workflow and goals`,
-                icon: Layers,
-              },
-              {
-                title: 'User Centred Design',
-                desc: `We focus heavily on clean, modern UI/UX that not only looks great but also enhances user
-              interaction. Our designers use the latest trends to ensure your web app stands out and
-              offers an intuitive user experience`,
-                icon: ChartNoAxesCombined,
-              },
-              {
-                title: 'Speed and Performance',
-                desc: `Slow websites lose users. That's why we optimize every pixel and process — ensuring your
-              application loads quickly and runs smoothly. We use tools like Next.js for server-side
-              rendering and lazy loading to maximize performance`,
-                icon: Rocket,
-              },
-            ].map((card, i) => {
-              const Icon = card.icon
-              return (
-                <div
-                  key={card.title}
-                  // Store each card element in the aboutCardsRef array by index
-                  // so the GSAP effect above can animate/target them.
-                  ref={(el) => {
-                    aboutCardsRef.current[i] = el
-                  }}
-                  className="backdrop-blur-lg p-6 rounded-3xl border border-[#00E5FF]/20 bg-[#00E5FF]/5 backdrop-blur-xl p-6 shadow-[0_0_40px_rgba(0,229,255,0.12)]group flex flex-col justify-between"
-                >
-                  <div>
-                    <h3 className="text-xl font-semibold text-center">{card.title}</h3>
-                    <p className="mt-6 text-sm text-center">{card.desc}</p>
-                  </div>
-
-                  {/* Icon at bottom, changes color on group hover */}
-                  <div className="flex justify-center mt-8">
-                    <Icon className="w-10 h-10 text-[#00E5FF] group-hover:text-white transition-colors" />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </section>
 
         {/* ============================= SERVICES SECTION ============================= */}
-        <section id="services" className="flex flex-col items-center justify-center py-16 px-4 text-[#00E5FF] pl-[12vw]">
-          <h2 className="text-3xl sm:text-7xl text-center">Our <span className="text-[#00E5FF80]">Services</span></h2>
-          <p className="text-base sm:text-lg mt-4 max-w-2xl text-center">
+        <section id="services" className="flex flex-col items-center justify-center py-16 px-4 pl-[12vw]">
+          <h2 className="text-3xl sm:text-7xl text-center ">What you need to<span className="text-[#FFFFFF80]">Grow</span></h2>
+          <p className="text-base sm:text-lg mt-4 max-w-2xl text-center text-[#FFFFFF]">
             We provide a complete range of digital solutions to help your business thrive in the modern world.
             From concept to launch, we work closely with you to deliver results that combine creativity,
             functionality, and performance.
@@ -491,65 +361,106 @@ export default function Page() {
           {/* Horizontal row of service preview cards */}
           <div className="mt-10 ">
             <div
-              className="flex gap-6 will-change-transform select-none cursor-grab active:cursor-grabbing grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3"
+              className="flex gap-6 will-change-transform select-none cursor-grab active:cursor-grabbing grid grid-cols-2 sm-grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
               <div className="contents" />
               {[
                 {
                   title: 'UI / UX Design',
                   desc: 'Futuristic interfaces, micro‑interactions, and clarity. Design systems that scale.',
-                  bg: '/software-development.jpg',
+                  bg: '/test.png',
                   onClick: () => scrollToSection(uiUxRef)
                 },
                 {
                   title: 'Web Development',
                   desc: 'Next.js, edge‑ready, SEO‑aware. Fast by default—beautiful by design.',
-                  bg: '/software-development.jpg',
+                  bg: '/test.png',
                   onClick: () => scrollToSection(webDevRef)
                 },
                 {
                   title: 'Software Dev',
                   desc: 'Custom platforms: web, mobile, and cloud. Reliable. Observable. Maintainable.',
-                  bg: '/software-development.jpg',
+                  bg: '/test.png',
+                  onClick: () => scrollToSection(softwareDevRef, 170)
+                },
+                {
+                  title: 'UI / UX Design',
+                  desc: 'Futuristic interfaces, micro‑interactions, and clarity. Design systems that scale.',
+                  bg: '/test.png',
+                  onClick: () => scrollToSection(uiUxRef)
+                },
+                {
+                  title: 'Web Development',
+                  desc: 'Next.js, edge‑ready, SEO‑aware. Fast by default—beautiful by design.',
+                  bg: '/test.png',
+                  onClick: () => scrollToSection(webDevRef)
+                },
+                {
+                  title: 'Software Dev',
+                  desc: 'Custom platforms: web, mobile, and cloud. Reliable. Observable. Maintainable.',
+                  bg: '/test.png',
                   onClick: () => scrollToSection(softwareDevRef, 170)
                 },
               ].map((s, i) => (
                 <article
                   key={i}
-                  className="group relative min-w-[82vw] sm:min-w-[54vw] lg:min-w-[28vw] h-[68vh] rounded-3xl overflow-hidden border border-[#00E5FF]/20 bg-[#00E5FF]/5 backdrop-blur-xl shadow-[0_0_60px_rgba(0,229,255,0.12)]"
+                  className=" group relative max-w-[20vw] h-[50vh]
+                    rounded-3xl overflow-hidden
+                    border border-white/20
+                    bg-white
+                    shadow-lg
+                    transition-all duration-500 ease-out
+                    hover:scale-105
+                    hover:shadow-2xl
+                    hover:border-white/50"
                 >
-                  {/* Background image, dimmed */}
-                  <div className="absolute inset-0 z-0 opacity-30">
-                    <img src={s.bg} alt="bg" loading="lazy" className="h-full w-full object-cover" />
-                  </div>
+                  
                   {/* Gradient overlay for text legibility */}
-                  <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/0 via-black/60 to-black" />
-                  <div className="relative z-20 flex h-full flex-col justify-end p-6">
-                    <h3 className="text-2xl font-bold drop-shadow-[0_0_30px_rgba(0,229,255,0.35)]">{s.title}</h3>
-                    <p className="mt-2 text-sm text-[#00E5FF]/85">{s.desc}</p>
+                  {/* <div className="absolute inset-0 z-10" /> */}
+                  <div className="relative z-20 flex h-full flex-col justify-start p-6">
+                    <h3 className="text-2xl font-bold text-[#000000]">{s.title}</h3>
+                    <p className="mt-2 text-sm text-[#000000]/85">{s.desc}</p>
                     {/* Scrolls down to the matching detail section on click */}
                     <button
-                      className="cursor-pointer mt-6 self-start rounded-xl border border-[#00E5FF]/60 px-5 py-2 text-sm font-semibold hover:bg-[#00E5FF]/10 transition"
+                      className="cursor-pointer mt-6 self-start rounded-xl text-[#000000] border border-[#000000]/60 px-5 py-2 text-sm font-semibold hover:bg-[#000000]/10 transition"
                       onClick={s.onClick}
                     >
                       Learn more
                     </button>
+
+                    {/* Background image, dimmed */}
+                  <div className="relative inset-0 z-0 justify-end flex items-end">
+                    <img src={s.bg} alt="bg" loading="lazy" className="h-50 w-50" />
                   </div>
-                  {/* Hover neon sweep — a radial glow that follows CSS custom
-                      properties --x/--y (expected to be set elsewhere, e.g. via JS) */}
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(600px_180px_at_var(--x,50%)_var(--y,50%),rgba(0,229,255,0.15),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  </div>
                 </article>
               ))}
             </div>
           </div>
 
-          {/* --------------------- Service Detail Sections --------------------- */}
-          <div className="flex flex-col gap-16 mt-36 w-full">
+          
+        </section>
+
+
+
+        {/* ============================= PROCESS SECTION ============================= */}
+          <section className="flex flex-col gap-16  pl-[12vw] p-[2vw]">
 
             {/* UI/UX Design detail block — target of the first "Learn more" button */}
-            <div ref={uiUxRef} className=" sticky top-20 flex flex-col lg:flex-row items-center gap-8 mt-40  rounded-[28px] border border-[#00E5FF]/20 backdrop-blur-xl bg-[#00E5FF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
+            <div ref={uiUxRef} className=" sticky top-20 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" ref={layer1Ref} className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">01</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Research</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
               <div className="flex-1 mt-20">
-                <h3 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">UI / UX Design</h3>
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">We do some research about your business</h5>
                 <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
                   We design modern, futuristic UI/UX experiences that captivate users and strengthen your brand.
                   By blending sleek aesthetics with intuitive functionality, we create immersive, engaging, and
@@ -558,14 +469,10 @@ export default function Page() {
                   aligned with your brand identity—driving satisfaction, loyalty, and long-term growth
                 </p>
               </div>
-              <div className="flex-1 flex justify-center mt-20">
-                {/* Illustration animated via layer1Ref (scale/opacity fade-in) */}
-                <img src="/design.png" alt="UI/UX" ref={layer1Ref} className="absolute w-full max-w-xs hidden md:block" />
-              </div>
             </div>
 
             {/* Web Development detail block — target of the second "Learn more" button */}
-            <div ref={webDevRef} className="relative sticky top-30 flex flex-col-reverse lg:flex-row items-center  mt-40 rounded-[28px] border border-[#00E5FF]/20 backdrop-blur-xl bg-[#00E5FF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
+            <div ref={webDevRef} className="relative sticky top-30 flex flex-col-reverse lg:flex-row items-center  mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
               <div className="flex-1 flex justify-center">
                 {/* Illustration animated via layer2Ref */}
                 <img src="/webdesign.png" alt="Web Dev" ref={layer2Ref} className="w-full max-w-md  opacity-50 hidden md:block" />
@@ -584,7 +491,7 @@ export default function Page() {
             </div>
 
             {/* Software Development detail block — target of the third "Learn more" button */}
-            <div ref={softwareDevRef} className="relative  flex flex-col lg:flex-row items-center gap-8 pl-[5vw] mt-20 rounded-[28px] border border-[#00E5FF]/20 backdrop-blur-xl bg-[#00E5FF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
+            <div ref={softwareDevRef} className="relative  flex flex-col lg:flex-row items-center gap-8 pl-[5vw] mt-20 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
               <div className="flex-1 mt-20">
                 <h3 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Software Development</h3>
                 <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
@@ -601,8 +508,7 @@ export default function Page() {
                 <img src="/software.png" alt="Software Dev" ref={layer3Ref} className="w-full max-w-md opacity-50 hidden md:block" />
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
         {/* ============================= PROJECTS SECTION ============================= */}
         <section id="projects" className="flex flex-col items-center justify-center py-16 px-4 pl-[12vw]">
@@ -622,7 +528,7 @@ export default function Page() {
           </div>
 
           {/* Contact / consultation request form */}
-          <div className="w-full max-w-lg mx-auto rounded-[28px] border border-[#00E5FF]/20 backdrop-blur-xl bg-[#00E5FF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8 flex flex-col items-center">
+          <div className="w-full max-w-lg mx-auto rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8 flex flex-col items-center">
 
             {/* Service type selector — toggles the `service` state */}
             <label className="text-gray-200 mt-2 mb-1 w-full text-left">I need a</label>

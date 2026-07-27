@@ -22,17 +22,17 @@ export default function Services() {
     <section className="bg-black py-20 px-6">
       {/* Section Header */}
       <div className="text-center mb-16">
-        <h2 className="text-5xl md:text-6xl font-bold text-[#00E5FF] mb-6 tracking-tight">
-          Our Focus <span className="text-[#00E5FF80]">Areas</span>
+        <h2 className="text-5xl md:text-6xl font-bold text-[#FFFFFF] mb-6 tracking-tight">
+          Our Focus <span className="text-[#FFFFFF80]">Areas</span>
         </h2>
         <div className="w-24 h-1 bg-white mx-auto mb-8"></div>
-        <p className="text-xl text-[#00E5FF] max-w-3xl mx-auto leading-relaxed">
+        <p className="text-xl text-[#FFFFFF] max-w-3xl mx-auto leading-relaxed">
           We specialize in delivering cutting-edge solutions across diverse industries, 
           transforming businesses with innovative technology.
         </p>
       </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-[28px] border border-[#00E5FF]/20 backdrop-blur-xl bg-[#00E5FF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
         {services.map((service, i) => {
           const Icon = service.icon;
 
@@ -52,8 +52,8 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
               viewport={{ once: true }}
-              className={`relative p-8 cursor-pointer group text-[#00E5FF] hover:text-white transition-all duration-500
-                ${hovered === i ? "bg-gradient-to-bl from-none to-[#00E5FF80]" : "bg-none"}
+              className={`relative p-8 cursor-pointer group text-[#FFFFFF] hover:text-white transition-all duration-500
+                ${hovered === i ? "bg-gradient-to-bl from-none to-[#FFFFFF80]" : "bg-none"}
                 
                 /* Mobile: always bottom border */
                 border-b border-zinc-800
@@ -69,7 +69,7 @@ export default function Services() {
               `}
             >
               <div className="mb-4">
-                <Icon className="w-8 h-8 text-[#00E5FF]" />
+                <Icon className="w-8 h-8 text-[#FFFFFF]" />
               </div>
               <h3 className="font-semibold text-lg mb-2">{service.title}</h3>
               <p className="text-sm">{service.desc}</p>

@@ -38,7 +38,7 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Navbar - UNCHANGED */}
-      <nav className="hidden lg:flex h-[100vh] lg:w-[10vw] bg-[#00E5FF]/5 backdrop-blur border-r border-gray-700 flex-col items-center py-8 fixed z-50">
+      <nav className="hidden lg:flex h-[100vh] lg:w-[10vw] bg-[#000000]/20 backdrop-blur  flex-col items-center py-8 fixed z-50">
         {/* Logo */}
         <div className="flex items-center justify-center gap-1 mb-8 pt-4">
           <a href="#home">
@@ -64,27 +64,27 @@ export default function Navbar() {
         {/* Navigation Menu */}
         <ul className="flex flex-col gap-8 text-white font-mono text-base lg:text-md items-center flex-1 justify-center">
           <li>
-            <a href="#home" className="hover:text-[#00E5FF] transition-colors hover:scale-105">
+            <a href="#home" className="hover:text-[#FFFFFF] transition-colors hover:scale-105">
               Home
             </a>
           </li>
           <li>
-            <a href="#about" className="hover:text-[#00E5FF] transition-colors hover:scale-105">
+            <a href="#about" className="hover:text-[#FFFFFF] transition-colors hover:scale-105">
               About
             </a>
           </li>
           <li>
-            <a href="#services" className="hover:text-[#00E5FF] transition-colors hover:scale-105">
+            <a href="#services" className="hover:text-[#FFFFFF] transition-colors hover:scale-105">
               Services
             </a>
           </li>
           <li>
-            <a href="#projects" className="hover:text-[#00E5FF] transition-colors hover:scale-105">
+            <a href="#projects" className="hover:text-[#FFFFFF] transition-colors hover:scale-105">
               Category
             </a>
           </li>
           <li>
-            <a href="#contact" className="hover:text-[#00E5FF] transition-colors hover:scale-105">
+            <a href="#contact" className="hover:text-[#FFFFFF] transition-colors hover:scale-105">
               Contact
             </a>
           </li>
@@ -99,7 +99,7 @@ export default function Navbar() {
             {/* Enhanced Mobile Logo */}
             <div className="flex items-center gap-1 group">
               <div className="relative">
-                <div className="absolute inset-0 bg-[#00E5FF]/20 rounded-full blur-lg group-hover:bg-[#00E5FF]/40 transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-[#FFFFFF]/20 rounded-full blur-lg group-hover:bg-[#FFFFFF]/40 transition-all duration-300"></div>
                 <Image 
                   src="/S.png" 
                   alt="S" 
@@ -109,7 +109,7 @@ export default function Navbar() {
                 />
               </div>
               <div className="relative">
-                <div className="absolute inset-0 bg-[#00E5FF]/20 rounded-full blur-lg group-hover:bg-[#00E5FF]/40 transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-[#FFFFFF]/20 rounded-full blur-lg group-hover:bg-[#FFFFFF]/40 transition-all duration-300"></div>
                 <Image 
                   src="/B.png" 
                   alt="B" 
@@ -127,11 +127,11 @@ export default function Navbar() {
               className="relative w-12 h-12 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
               aria-label="Toggle menu"
             >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#00E5FF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#FFFFFF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative flex flex-col items-center justify-center space-y-1">
                 <span
                   className={`block h-0.5 w-5 bg-white transition-all duration-500 ease-out ${
-                    isMenuOpen ? "rotate-45 translate-y-1.5 bg-[#00E5FF]" : ""
+                    isMenuOpen ? "rotate-45 translate-y-1.5 bg-[#FFFFFF]" : ""
                   }`}
                 />
                 <span
@@ -141,7 +141,7 @@ export default function Navbar() {
                 />
                 <span
                   className={`block h-0.5 w-5 bg-white transition-all duration-500 ease-out ${
-                    isMenuOpen ? "-rotate-45 -translate-y-1.5 bg-[#00E5FF]" : ""
+                    isMenuOpen ? "-rotate-45 -translate-y-1.5 bg-[#FFFFFF]" : ""
                   }`}
                 />
               </div>
@@ -169,11 +169,11 @@ export default function Navbar() {
         >
           {/* Animated Header */}
           <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/5 via-transparent to-[#00E5FF]/5"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFFFFF]/5 via-transparent to-[#FFFFFF]/5"></div>
             <div className="relative flex items-center justify-between p-6 border-b border-white/10">
               <div className="flex items-center gap-1 group">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-[#00E5FF]/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-[#FFFFFF]/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                   <Image 
                     src="/S.png" 
                     alt="S" 
@@ -183,7 +183,7 @@ export default function Navbar() {
                   />
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-[#00E5FF]/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-[#FFFFFF]/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                   <Image 
                     src="/B.png" 
                     alt="B" 
@@ -201,12 +201,12 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={closeMenu}
-                className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#00E5FF]/50 transition-all duration-300 group"
+                className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-[#FFFFFF]/50 transition-all duration-300 group"
                 aria-label="Close menu"
               >
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#FFFFFF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <svg
-                  className="relative w-5 h-5 text-white/70 group-hover:text-[#00E5FF] transition-colors duration-300 mx-auto"
+                  className="relative w-5 h-5 text-white/70 group-hover:text-[#FFFFFF] transition-colors duration-300 mx-auto"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -240,15 +240,15 @@ export default function Navbar() {
                     href={href}
                     onClick={closeMenu}
                     className="group relative flex items-center gap-4 px-4 py-4 rounded-2xl 
-                             hover:bg-gradient-to-r hover:from-[#00E5FF]/10 hover:to-transparent
-                             border border-transparent hover:border-[#00E5FF]/20
+                             hover:bg-gradient-to-r hover:from-[#FFFFFF]/10 hover:to-transparent
+                             border border-transparent hover:border-[#FFFFFF]/20
                              transition-all duration-300 overflow-hidden"
                   >
                     {/* Background glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#FFFFFF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                     
                     {/* Icon */}
-                    <div className="relative z-10 w-6 h-6 text-white/60 group-hover:text-[#00E5FF] transition-colors duration-300">
+                    <div className="relative z-10 w-6 h-6 text-white/60 group-hover:text-[#FFFFFF] transition-colors duration-300">
                       <svg
                         className="w-full h-full"
                         fill="none"
@@ -266,7 +266,7 @@ export default function Navbar() {
                     
                     {/* Arrow indicator */}
                     <div className="relative z-10 ml-auto opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                      <svg className="w-4 h-4 text-[#00E5FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-[#FFFFFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -280,9 +280,9 @@ export default function Navbar() {
           <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10 bg-gradient-to-t from-black/50 to-transparent">
             <div className="text-center space-y-3">
               <div className="flex justify-center space-x-4">
-                <div className="w-2 h-2 rounded-full bg-[#00E5FF]/60 animate-pulse"></div>
-                <div className="w-2 h-2 rounded-full bg-[#00E5FF]/40 animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                <div className="w-2 h-2 rounded-full bg-[#00E5FF]/20 animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="w-2 h-2 rounded-full bg-[#FFFFFF]/60 animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-[#FFFFFF]/40 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <div className="w-2 h-2 rounded-full bg-[#FFFFFF]/20 animate-pulse" style={{animationDelay: '1s'}}></div>
               </div>
               <div className="text-white/40 text-xs font-mono tracking-widest">
                 © 2024 SB STUDIO

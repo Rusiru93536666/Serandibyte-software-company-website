@@ -22,7 +22,7 @@ export default function Alert({ type, message, duration = 3000, onClose }: Alert
   return (
     <div
       className={`fixed right-5 z-50 flex flex-col items-start gap-2 px-6 py-4 rounded-xl shadow-lg text-white
-      ${type === "success" ? "bg-[#00E5FF] border border-[#00E5FF]/50" : "bg-red-500"}
+      ${type === "success" ? "bg-[#FFFFFF] border border-[#FFFFFF]/50" : "bg-red-500"}
       top-[80px] md:top-5`} // top-80px for mobile, normal 5 for md+
       style={{ minWidth: "250px" }}
     >

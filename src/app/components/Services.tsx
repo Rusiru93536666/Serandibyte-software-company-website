@@ -19,7 +19,7 @@ export default function Services() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <section className="bg-black py-20 px-6">
+    <section className=" py-20 px-6">
       {/* Section Header */}
       <div className="text-center mb-16">
         <h2 className="text-5xl md:text-6xl font-bold text-[#FFFFFF] mb-6 tracking-tight">
@@ -32,7 +32,7 @@ export default function Services() {
         </p>
       </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
+      <div className="max-w-8xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 p-8">
         {services.map((service, i) => {
           const Icon = service.icon;
 

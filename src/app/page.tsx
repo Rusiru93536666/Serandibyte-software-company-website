@@ -11,42 +11,6 @@ import Alert from './components/Alert'
 import { NextPage } from 'next'
 
 export default function Page() {
-  // ---------------------------------------------------------------------
-  // REFS
-  // ---------------------------------------------------------------------
-
-  // Wraps the whole "Services" section — used as the ScrollTrigger anchor
-  // for the intro animation of that section.
-  const servicesRef = useRef<HTMLDivElement>(null)
-
-  // Array of refs pointing to each service "card" element so GSAP can
-  // stagger-animate them together as a group.
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([])
-
-  // Ref for an image element that slides in horizontally on scroll
-  // (currently not attached to any JSX element below, but animated if present).
-  const modernImgRef = useRef<HTMLDivElement>(null)
-
-  // Refs for the two decorative "ring" images in the contact section,
-  // each animated independently with different start/end transforms.
-  const ringRef = useRef<HTMLImageElement>(null)
-  const ring2Ref = useRef<HTMLImageElement>(null)
-
-  // Refs for the three illustrative images inside the "service detail"
-  // blocks (UI/UX, Web Dev, Software Dev) — each fades/scales in on scroll.
-  const layer1Ref = useRef<HTMLImageElement>(null)
-  const layer2Ref = useRef<HTMLImageElement>(null)
-  const layer3Ref = useRef<HTMLImageElement>(null)
-
-  // Refs for the three "service detail" sections, used as scroll targets
-  // when a user clicks "Learn more" on a service card above.
-  const uiUxRef = useRef<HTMLDivElement>(null)
-  const webDevRef = useRef<HTMLDivElement>(null)
-  const softwareDevRef = useRef<HTMLDivElement>(null)
-
-  // ---------------------------------------------------------------------
-  // STATE
-  // ---------------------------------------------------------------------
 
   // Which service type the user selected in the contact form
   // ("Website" | "Software" | "Design" | null).
@@ -67,6 +31,60 @@ export default function Page() {
     setAlert({ type, message });
     setTimeout(() => setAlert(null), 3000);
   }
+
+  // ---------------------------------------------------------------------
+  // "Learn More" popup / modal state + refs
+  // ---------------------------------------------------------------------
+  type ServiceCard = { title: string; desc: string; bg: string };
+
+  // Currently selected service card (null = modal closed).
+  const [selectedCard, setSelectedCard] = useState<ServiceCard | null>(null);
+
+  // Refs used for the GSAP open/close transition.
+  const modalRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Opens the modal for a given card.
+  const openModal = (card: ServiceCard) => {
+    setSelectedCard(card);
+  };
+
+  // Animates the modal out, then clears the state once the animation completes.
+  const closeModal = () => {
+    if (modalRef.current && overlayRef.current) {
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.25,
+        ease: 'power2.in',
+      });
+      gsap.to(modalRef.current, {
+        opacity: 0,
+        scale: 0.85,
+        y: 30,
+        duration: 0.3,
+        ease: 'power3.in',
+        onComplete: () => setSelectedCard(null),
+      });
+    } else {
+      setSelectedCard(null);
+    }
+  };
+
+  // Plays the "open" transition whenever a new card is selected.
+  useEffect(() => {
+    if (selectedCard && modalRef.current && overlayRef.current) {
+      gsap.fromTo(
+        overlayRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: 'power2.out' }
+      );
+      gsap.fromTo(
+        modalRef.current,
+        { opacity: 0, scale: 0.85, y: 30 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: 'power3.out' }
+      );
+    }
+  }, [selectedCard]);
 
   // ---------------------------------------------------------------------
   // HELPERS
@@ -94,171 +112,6 @@ export default function Page() {
     // Must happen client-side only (hence 'use client' + useEffect).
     gsap.registerPlugin(ScrollTrigger)
 
-    // --- Services section intro animation ---
-    // Fades/slides the section heading in, then staggers the cards in
-    // from below, all tied to scroll position via a scrubbed timeline.
-    if (servicesRef.current && cardRefs.current.length) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: servicesRef.current,
-          start: 'top 120%',
-          end: 'bottom 99%',
-          scrub: true,
-          // markers: true,
-        },
-      })
-
-      // Step 1: reveal the section container itself.
-      tl.from(servicesRef.current, {
-        opacity: 0,
-        y: 50,
-        duration: 0.5,
-      })
-      // Step 2: stagger each card in from below/right, slightly
-      // overlapping with the previous animation (-=0.3).
-      tl.from(
-        cardRefs.current,
-        {
-          opacity: 0,
-          y: 500,
-          x: 100,
-          stagger: 0.2,
-          duration: 0.5,
-        },
-        '-=0.3'
-      )
-    }
-
-
-    // --- "Modern image" slide-in animation ---
-    // Moves the element from the right (x: 80) to the left (x: -80) while
-    // fading in, scrubbed to scroll position. (Note: modernImgRef is not
-    // currently attached to any element in the JSX below.)
-    if (modernImgRef.current) {
-      gsap.fromTo(
-        modernImgRef.current,
-        { x: 80, opacity: 0 },
-        {
-          x: -80,
-          opacity: 1,
-          duration: 1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: modernImgRef.current,
-            start: 'top 80%',
-            end: 'bottom 60%',
-            scrub: true,
-          },
-        }
-      )
-    }
-
-    // --- Contact section: decorative ring #1 ---
-    // Starts large/offset/rotated off to one side, then scales down and
-    // moves into its final resting position as the user scrolls, with a
-    // yoyo effect (animation reverses once it completes).
-    if (ringRef.current) {
-      gsap.fromTo(
-        ringRef.current,
-        { scale: 0.7, x: 800, y: 300, rotate: 20 },
-        {
-          scale: 1.3,
-          x: 150,
-          y: 300,
-          duration: 1.2,
-          ease: 'power2.inout',
-          yoyo: true,
-          scrollTrigger: {
-            trigger: ringRef.current,
-            start: 'top 100%',
-            end: 'bottom 80%',
-            scrub: true,
-            // markers: true,
-          },
-        }
-      )
-    }
-
-    // --- Contact section: decorative ring #2 ---
-    // Mirrors ring #1 but enters from the opposite corner (top-left)
-    // and settles into a different final position.
-    if (ring2Ref.current) {
-      gsap.fromTo(
-        ring2Ref.current,
-        { scale: 0.7, x: -900, y: -500, rotate: 20 },
-        {
-          scale: 1,
-          x: -250,
-          y: -100,
-          duration: 1.2,
-          ease: 'power2.inout',
-          scrollTrigger: {
-            trigger: ring2Ref.current,
-            start: 'top 90%',
-            end: 'bottom 40%',
-            scrub: true,
-            // markers: true,
-          },
-        }
-      )
-    }
-
-    // --- Service detail illustration: Layer 1 (UI/UX image) ---
-    // Scales up from almost nothing and fades in to half-opacity,
-    // scrubbed against scroll position.
-    if (layer1Ref.current) {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: layer1Ref.current,
-          start: 'top 100%',
-          end: 'bottom 10%',
-          scrub: true,
-          // markers: true,
-        }
-      })
-        // Stop 1
-        .fromTo(layer1Ref.current,
-          { scale: 0.1, x: 0, y: -180, opacity: 0 },
-          { scale: 1.1, x: 0, y: -180, opacity: 0.5, duration: 1.2, ease: 'power2.inOut' }
-        )
-    }
-
-    // --- Service detail illustration: Layer 2 (Web Dev image) ---
-    if (layer2Ref.current) {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: layer2Ref.current,
-          start: 'top 100%',
-          end: 'bottom 50%',
-          scrub: true,
-          // markers: true,
-        }
-      })
-        // Stop 1
-        .fromTo(layer2Ref.current,
-          { scale: 0.1, x: 0, y: 0, opacity: 0 },
-          { scale: 1, x: 0, y: 0, opacity: 0.5, duration: 1.2, ease: 'power2.inOut' }
-        )
-    }
-
-    // --- Service detail illustration: Layer 3 (Software Dev image) ---
-    if (layer3Ref.current) {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: layer3Ref.current,
-          start: 'top 100%',
-          end: 'bottom 50%',
-          scrub: true,
-          // markers: true,
-        }
-      })
-        // Stop 1
-        .fromTo(layer3Ref.current,
-          { scale: 0.1, x: 0, y: 0, opacity: 0 },
-          { scale: 1.1, x: 0, y: 0, opacity: 0.5, duration: 1.2, ease: 'power2.inOut' }
-        )
-    }
-
   }, []) // Empty dependency array: run once after initial mount.
 
   // ---------------------------------------------------------------------
@@ -274,6 +127,63 @@ export default function Page() {
           message={alert.message}
           onClose={() => setAlert(null)}
         />
+      )}
+
+      {/* LEARN MORE MODAL — GSAP-animated popup for the selected service card */}
+      {selectedCard && (
+        <div
+          ref={overlayRef}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          onClick={closeModal}
+        >
+          <div
+            ref={modalRef}
+            className="relative w-full max-w-lg rounded-[28px] border border-white/20 bg-gradient-to-b from-[#222] via-[#1b1b1b] to-[#111] p-8 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeModal}
+              aria-label="Close"
+              className="absolute top-5 right-5 text-white/60 hover:text-white transition text-xl leading-none"
+            >
+              ✕
+            </button>
+
+            {/* icon */}
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur mb-6">
+              <img
+                src={selectedCard.bg}
+                alt=""
+                className="h-10 w-10 object-contain opacity-90"
+              />
+            </div>
+
+            {/* title */}
+            <h3 className="text-3xl font-semibold tracking-wide text-white mb-4">
+              {selectedCard.title}
+            </h3>
+
+            {/* description */}
+            <p className="text-base leading-7 text-white/60 mb-8">
+              {selectedCard.desc}
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeModal}
+                className="flex-1 px-4 py-3 rounded-lg border border-white/20 text-white/80 font-medium transition hover:border-white/40 hover:text-white"
+              >
+                Close
+              </button>
+              <a href="#contact" onClick={closeModal} className="flex-1">
+                <button className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-white/80 to-white/60 text-black font-bold shadow hover:from-white hover:to-gray-200 transition">
+                  Get Started
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* NAVBAR — fixed to the left edge, full height, hidden width on mobile */}
@@ -313,7 +223,7 @@ export default function Page() {
 
             {/* Small pill badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-[#FFFFFF]/40 bg-[#FFFFFF]/5 px-3 py-1 text-xs tracking-wider uppercase mb-4">
-              <span className="h-2 w-2 rounded-full bg-[#FFFFFF] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[#FFFFFF] animate-pulse"  />
               SerandiByte Portfolio
             </div>
 
@@ -340,9 +250,9 @@ export default function Page() {
 
         {/* ============================= MARQUEE ============================= */}
         {/* Decorative oversized repeated brand text, low opacity, non-interactive */}
-        <section id="marquee" className="relative overflow-hidden py-6">
+        <section id="marquee" className="relative overflow-hidden py-6 bg-gradient-to-b from-black to-[#151515]">
           <div className="whitespace-nowrap will-change-transform">
-            <p className="inline-block text-[14vw] sm:text-[10vw] font-black opacity-5 tracking-tight">
+            <p className="inline-block text-[14vw] sm:text-[10vw] font-[#ffffff] font-bold opacity-5 tracking-tight">
               SERANDIBYTE • SERANDIBYTE • SERANDIBYTE • SERANDIBYTE •
             </p>
           </div>
@@ -351,7 +261,7 @@ export default function Page() {
 
         {/* ============================= SERVICES SECTION ============================= */}
         <section id="services" className="flex flex-col items-center justify-center py-16 px-4 pl-[12vw]">
-          <h2 className="text-3xl sm:text-7xl text-center ">What you need to<span className="text-[#FFFFFF80]">Grow</span></h2>
+          <h2 className="text-3xl sm:text-7xl text-center ">What you need to <span className="text-[#FFFFFF80]"> Grow Online</span></h2>
           <p className="text-base sm:text-lg mt-4 max-w-2xl text-center text-[#FFFFFF]">
             We provide a complete range of digital solutions to help your business thrive in the modern world.
             From concept to launch, we work closely with you to deliver results that combine creativity,
@@ -361,7 +271,7 @@ export default function Page() {
           {/* Horizontal row of service preview cards */}
           <div className="mt-10 ">
             <div
-              className="flex gap-6 will-change-transform select-none cursor-grab active:cursor-grabbing grid grid-cols-2 sm-grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              className="flex gap-6 will-change-transform select-none cursor-grab active:cursor-grabbing grid grid-cols-1 sm-grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
               <div className="contents" />
               {[
@@ -369,71 +279,105 @@ export default function Page() {
                   title: 'UI / UX Design',
                   desc: 'Futuristic interfaces, micro‑interactions, and clarity. Design systems that scale.',
                   bg: '/test.png',
-                  onClick: () => scrollToSection(uiUxRef)
                 },
                 {
                   title: 'Web Development',
                   desc: 'Next.js, edge‑ready, SEO‑aware. Fast by default—beautiful by design.',
                   bg: '/test.png',
-                  onClick: () => scrollToSection(webDevRef)
+                  // onClick: () => scrollToSection(webDevRef)
                 },
                 {
                   title: 'Software Dev',
                   desc: 'Custom platforms: web, mobile, and cloud. Reliable. Observable. Maintainable.',
                   bg: '/test.png',
-                  onClick: () => scrollToSection(softwareDevRef, 170)
                 },
                 {
                   title: 'UI / UX Design',
                   desc: 'Futuristic interfaces, micro‑interactions, and clarity. Design systems that scale.',
                   bg: '/test.png',
-                  onClick: () => scrollToSection(uiUxRef)
                 },
                 {
                   title: 'Web Development',
                   desc: 'Next.js, edge‑ready, SEO‑aware. Fast by default—beautiful by design.',
                   bg: '/test.png',
-                  onClick: () => scrollToSection(webDevRef)
                 },
                 {
                   title: 'Software Dev',
                   desc: 'Custom platforms: web, mobile, and cloud. Reliable. Observable. Maintainable.',
                   bg: '/test.png',
-                  onClick: () => scrollToSection(softwareDevRef, 170)
                 },
               ].map((s, i) => (
                 <article
-                  key={i}
-                  className=" group relative max-w-[20vw] h-[50vh]
-                    rounded-3xl overflow-hidden
-                    border border-white/20
-                    bg-white
-                    shadow-lg
-                    transition-all duration-500 ease-out
-                    hover:scale-105
-                    hover:shadow-2xl
-                    hover:border-white/50"
+                key={i}
+                className="
+                  group
+                  relative
+                  w-full
+                  h-[320px]
+                  overflow-hidden
+                  rounded-[24px]
+                  border border-white/10
+                  bg-[#171717]
+                  p-[1px]
+                  transition-all
+                  duration-500
+                  hover:-translate-y-2
+                  hover:border-white/20
+                "
+              >
+                {/* top glow */}
+                <div className="absolute inset-x-8 top-0 h-[120px] bg-white/10 blur-3xl opacity-40 group-hover:opacity-70 transition" />
+
+                {/* card */}
+                <div
+                  className="
+                    relative
+                    flex
+                    h-full
+                    flex-col
+                    rounded-[23px]
+                    bg-gradient-to-b
+                    from-[#222]
+                    via-[#1b1b1b]
+                    to-[#111]
+                    p-6
+                  "
                 >
-                  
-                  {/* Gradient overlay for text legibility */}
-                  {/* <div className="absolute inset-0 z-10" /> */}
-                  <div className="relative z-20 flex h-full flex-col justify-start p-6">
-                    <h3 className="text-2xl font-bold text-[#000000]">{s.title}</h3>
-                    <p className="mt-2 text-sm text-[#000000]/85">{s.desc}</p>
-                    {/* Scrolls down to the matching detail section on click */}
+
+
+                  {/* icon */}
+                  <div className="mt-8 flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 backdrop-blur">
+                    <img
+                      src={s.bg}
+                      alt=""
+                      className="h-10 w-10 object-contain opacity-90"
+                    />
+                  </div>
+
+                  {/* title */}
+                  <h3 className="mt-8 text-2xl font-semibold tracking-wide text-white">
+                    {s.title}
+                  </h3>
+
+                  {/* description */}
+                  <p className="mt-3 text-sm leading-7 text-white/45">
+                    {s.desc}
+                  </p>
+
+                  <div className="mt-auto flex items-center justify-between pt-8">
                     <button
-                      className="cursor-pointer mt-6 self-start rounded-xl text-[#000000] border border-[#000000]/60 px-5 py-2 text-sm font-semibold hover:bg-[#000000]/10 transition"
-                      onClick={s.onClick}
+                      onClick={() => openModal(s)}
+                      className="text-sm text-white/70 transition hover:text-white"
                     >
-                      Learn more
+                      Learn More →
                     </button>
 
-                    {/* Background image, dimmed */}
-                  <div className="relative inset-0 z-0 justify-end flex items-end">
-                    <img src={s.bg} alt="bg" loading="lazy" className="h-50 w-50" />
+                    <button className="rounded-full border border-white/10 px-4 py-2 text-xs text-white/60 transition hover:border-white/30 hover:text-white">
+                      Get Started
+                    </button>
                   </div>
-                  </div>
-                </article>
+                </div>
+              </article>
               ))}
             </div>
           </div>
@@ -442,75 +386,218 @@ export default function Page() {
         </section>
 
 
-
         {/* ============================= PROCESS SECTION ============================= */}
-          <section className="flex flex-col gap-16  pl-[12vw] p-[2vw]">
+          <section className="flex flex-col gap-16 pl-[12vw] p-[2vw]">
 
-            {/* UI/UX Design detail block — target of the first "Learn more" button */}
-            <div ref={uiUxRef} className=" sticky top-20 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 p-8">
+            <div className="text-center flex flex-col mt-20 items-center">
+              <h2 className="text-3xl sm:text-7xl text-center ">How We Take You From  <span className="text-[#FFFFFF80]">Idea to <br></br> Impact</span></h2>
+            <p className="text-base sm:text-lg mt-4 max-w-2xl text-center text-[#FFFFFF]">
+              We provide a complete range of digital solutions to help your business thrive in the modern world.
+              From concept to launch, we work closely with you to deliver results that combine creativity,
+              functionality, and performance.
+            </p>
+            </div>
+
+            {/* step 01 */}
+            <div  className=" sticky top-10 flex flex-col lg:flex-row items-center gap-8 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
               {/* <div className="flex-1 flex justify-center mt-20">
-                <img src="/design.png" alt="UI/UX" ref={layer1Ref} className="absolute w-full max-w-xs hidden md:block" />
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
               </div> */}
 
               <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
                 <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">01</h1>
-                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Research</h4>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Discovery & Consultation</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[40vh] flex-1 justify-center text-white"/>
+
+              <div className="flex-1 mt-20">
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Understanding your business goals, audience, and requirements</h5>
+                <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
+                  Every successful project begins with understanding your business. We take the time to learn 
+                  about your company, target audience, objectives, and the challenges you face. Through detailed 
+                  discussions and research, we identify opportunities that will help your business stand out and
+                   achieve long-term success. This foundation allows us to create solutions that are aligned 
+                   with your vision and business goals.
+                </p>
+              </div>
+            </div>
+
+            {/* step 02 */}
+            <div  className=" sticky top-15 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">02</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Strategy & Planning</h4>
               </div>
 
               <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
 
               <div className="flex-1 mt-20">
-                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">We do some research about your business</h5>
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Creating a clear roadmap for successful project execution</h5>
                 <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
-                  We design modern, futuristic UI/UX experiences that captivate users and strengthen your brand.
-                  By blending sleek aesthetics with intuitive functionality, we create immersive, engaging, and
-                  emotionally resonant interfaces. From micro-interactions and advanced visual styles to accessible,
-                  consistent design, our approach ensures every touchpoint is memorable, user-friendly, and
-                  aligned with your brand identity—driving satisfaction, loyalty, and long-term growth
+                  Once we understand your requirements, we develop a clear strategy and project roadmap.
+                   We carefully plan the features, technologies, design approach, and timeline to ensure 
+                   every stage of the project is organized and efficient. Our strategic planning minimizes
+                    risks, maximizes productivity, and ensures your investment delivers measurable business 
+                    value.
                 </p>
               </div>
             </div>
 
-            {/* Web Development detail block — target of the second "Learn more" button */}
-            <div ref={webDevRef} className="relative sticky top-30 flex flex-col-reverse lg:flex-row items-center  mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
-              <div className="flex-1 flex justify-center">
-                {/* Illustration animated via layer2Ref */}
-                <img src="/webdesign.png" alt="Web Dev" ref={layer2Ref} className="w-full max-w-md  opacity-50 hidden md:block" />
+            {/* step 03 */}
+            <div  className=" sticky top-20 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">03</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Design & Branding</h4>
               </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
               <div className="flex-1 mt-20">
-                <h3 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Web Development</h3>
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Building modern designs that strengthen your brand identity</h5>
                 <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
-                  we craft fast, high-performance websites that combine exceptional UI/UX design
-                  with full functionality. Every site we build is optimized for speed, usability,
-                  and seamless interaction—ensuring your visitors stay engaged and satisfied.
-                  We design with precision to deliver visually stunning interfaces that work
-                  flawlessly across devices. Our websites are also SEO-friendly from the ground
-                  up, helping your business rank higher and reach the right audience with ease
+                  Great design creates lasting impressions. Our creative team designs intuitive user experiences,
+                   modern interfaces, and compelling brand visuals that strengthen your business identity. From 
+                   UI/UX design and graphic design to social media creatives and brand assets, we ensure every
+                    visual element reflects professionalism and builds customer trust.
                 </p>
               </div>
             </div>
 
-            {/* Software Development detail block — target of the third "Learn more" button */}
-            <div ref={softwareDevRef} className="relative  flex flex-col lg:flex-row items-center gap-8 pl-[5vw] mt-20 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8">
+            {/* step 04 */}
+            <div  className=" sticky top-25 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">04</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Development</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
               <div className="flex-1 mt-20">
-                <h3 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Software Development</h3>
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Creating powerful digital solutions with modern technology</h5>
                 <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
-                  We provide custom software solutions designed to meet your unique business needs.
-                  From web and mobile applications to cloud-based systems, our team builds scalable,
-                  reliable, and high-performing software that streamlines operations and enhances user
-                  experiences. We follow best practices in development, testing, and maintenance to
-                  ensure every application we deliver adds value, improves efficiency, and supports
-                  long-term business growth
+                  Using modern technologies and industry best practices, we transform ideas into powerful
+                   digital solutions. Whether it's a responsive website, mobile application, POS system,
+                    or custom business software, our development team focuses on performance, security,
+                     scalability, and user experience. Every solution is built to support your business 
+                      growth and future expansion.
                 </p>
               </div>
-              <div className="flex-1 flex justify-center">
-                {/* Illustration animated via layer3Ref */}
-                <img src="/software.png" alt="Software Dev" ref={layer3Ref} className="w-full max-w-md opacity-50 hidden md:block" />
+            </div>
+
+            {/* step 05 */}
+            <div  className=" sticky top-30 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">05</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Content Creation</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
+              <div className="flex-1 mt-20">
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Producing content that promotes and grows your brand</h5>
+                <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
+                  Building a great product is only part of the journey. To help your business reach more
+                   customers, we create engaging promotional videos, eye-catching social media posts, and 
+                   impactful digital marketing content. Our goal is to increase your brand visibility, 
+                   strengthen customer engagement, and drive meaningful business growth across digital 
+                   platforms.
+                </p>
               </div>
             </div>
+
+            {/* step 06 */}
+            <div  className=" sticky top-35 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">06</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Testing & Quality Assurance</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
+              <div className="flex-1 mt-20">
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Ensuring quality, performance, and reliability</h5>
+                <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
+                  Before launching your project, we conduct comprehensive testing to ensure everything works
+                   flawlessly. We verify functionality, performance, security, compatibility, and usability 
+                   across different devices and platforms. By identifying and resolving issues early, we
+                    deliver reliable solutions that provide a seamless experience for your customers.
+                </p>
+              </div>
+            </div>
+
+            {/* step 07 */}
+            <div  className=" sticky top-40 flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">07</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Launch & Deployment</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
+              <div className="flex-1 mt-20">
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Delivering your solution smoothly to the market</h5>
+                <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
+                  When your solution is fully tested and approved, we handle the deployment process with
+                   precision. Whether launching a website, publishing a mobile app, or implementing a POS 
+                   system, we ensure a smooth transition from development to production. Our team monitors
+                    the launch to guarantee everything performs as expected from day one.
+                </p>
+              </div>
+            </div>
+
+            {/* step 08 */}
+            <div  className="relative flex flex-col lg:flex-row items-center gap-8 mt-40 rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-sm bg-gradient-to-b from-[#121212] via-[#161616] to-[#121212] p-8">
+              {/* <div className="flex-1 flex justify-center mt-20">
+                <img src="/design.png" alt="UI/UX" className="absolute w-full max-w-xs hidden md:block" />
+              </div> */}
+
+              <div className="flex-1 flex flex-col text-center mt-20 max-w-[30vw]">
+                <h1 className="lg:text-[180px] md:text-5xl sm:text-2xl text-white font-bold">08</h1>
+                <h4 className="lg:text-7xl md:text-5xl sm:text-2xl text-white">Growth, Support</h4>
+              </div>
+
+              <div className="bg-white max-w-[1px] h-[60vh] flex-1 justify-center text-white"/>
+
+              <div className="flex-1 mt-20">
+                <h5 className="lg:text-3xl md:text-2xl sm:text-xl font-bold text-white">Providing continuous improvements and long-term support</h5>
+                <p className="text-base sm:text-sm md:text-md lg:text-xl text-gray-300 mt-4">
+                  Our relationship with clients continues long after launch. We provide ongoing maintenance, 
+                  technical support, feature enhancements, and performance optimization to keep your digital 
+                  solutions running at their best. As your business evolves, we help you adapt with new 
+                  technologies, marketing strategies, and continuous improvements that drive sustainable 
+                  growth and strengthen your brand.
+                </p>
+              </div>
+            </div>
+
           </section>
 
-        {/* ============================= PROJECTS SECTION ============================= */}
+        {/* ============================= FOCUS AREA SECTION ============================= */}
         <section id="projects" className="flex flex-col items-center justify-center py-16 px-4 pl-[12vw]">
           <Services />
         </section>
@@ -518,14 +605,6 @@ export default function Page() {
         {/* ============================= CONTACT SECTION ============================= */}
         <section id="contact" className="flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] pl-[12vw]">
           <h2 className="text-3xl sm:text-4xl text-white mb-6 font-bold text-center">Contact Us</h2>
-
-          {/* Animated decorative rings (see ringRef/ring2Ref in useEffect) */}
-          <div className="flex-1 flex justify-center">
-            <img ref={ringRef} src="/ring.png" alt="black 3D ring" className="absolute w-full max-w-md rounded-lg" />
-          </div>
-          <div className="flex-1 flex justify-center">
-            <img ref={ring2Ref} src="/ring.png" alt="black 3D ring" className="absolute w-full max-w-md rounded-lg" />
-          </div>
 
           {/* Contact / consultation request form */}
           <div className="w-full max-w-lg mx-auto rounded-[28px] border border-[#FFFFFF]/20 backdrop-blur-xl bg-[#FFFFFF]/5 shadow-[0_0_20px_rgba(0,229,255,0.25)] p-8 flex flex-col items-center">
@@ -543,6 +622,7 @@ export default function Page() {
                 >{s}</button>
               ))}
             </div>
+
 
             <label className="text-gray-200 mt-2 mb-1 w-full text-left">Email</label>
             <input
